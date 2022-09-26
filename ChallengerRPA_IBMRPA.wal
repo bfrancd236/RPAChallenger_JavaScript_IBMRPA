@@ -1,0 +1,25 @@
+�defVar --name inExcel --type Excel
+defVar --name dtExcel --type DataTable
+defVar --name nuLoop --type Numeric
+defVar --name txNome --type String
+defVar --name txSobrenome --type String
+defVar --name txEmpresa --type String
+defVar --name txCargo --type String
+defVar --name txEndereco --type String
+defVar --name txEmail --type String
+defVar --name txNumero --type String
+defVar --name insNavegador --type String
+defVar --name Navegador --type Browser
+webStart --name RPAChallenger --type "Chrome" Navegador=value
+webNavigate --url "https://rpachallenge.com/"
+excelOpen --file "C:\\Users\\LVUGMB631\\Desktop\\RPA Challenger\\challenge.xlsx" inExcel=value
+excelGetTable --file ${inExcel} --sheet Sheet1 --fromrow 1 --fromcolumn 1 --hasheaders  dtExcel=value
+webClick --nowait  --selector "XPath" --xpath "/html/body/app-root/div[2]/app-rpa1/div/div[1]/div[6]/button"
+for --variable ${nuLoop} --from 1 --to ${dtExcel.Rows} --step 1
+	mapTableRow --dataTable ${dtExcel} --row ${nuLoop} --mappings "number=1=${txNome},number=2=${txSobrenome},number=3=${txEmpresa},number=4=${txCargo},number=5=${txEndereco},number=6=${txEmail},number=7=${txNumero}"
+	if --left "${txNome}" --operator "Is_Null_Or_Empty"
+		break
+	endIf
+	webExecuteJavaScript --script "document.querySelector(\"[ng-reflect-name=\'labelFirstName\']\").value = \'${txNome}\'\r\ndocument.querySelector(\"[ng-reflect-name=\'labelLastName\']\").value = \'${txSobrenome}\';\r\ndocument.querySelector(\"[ng-reflect-name=\'labelCompanyName\']\").value = \'${txEmpresa}\';\r\ndocument.querySelector(\"[ng-reflect-name=\'labelRole\']\").value = \'${txCargo}\';\r\ndocument.querySelector(\"[ng-reflect-name=\'labelAddress\']\").value = \'${txEndereco}\';\r\ndocument.querySelector(\"[ng-reflect-name=\'labelEmail\']\").value = \'${txEmail}\'; \r\ndocument.querySelector(\"[ng-reflect-name=\'labelPhone\']\").value = \'${txNumero}\';\r\ndocument.querySelector(\"[value=\'Submit\']\").click();" --comment "Execução Javascript"
+next
+webClose --name RPAChallenger --leavebrowseropen *21.0.2.4
